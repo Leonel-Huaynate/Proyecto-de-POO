@@ -59,7 +59,7 @@ public class FormLogin extends javax.swing.JFrame {
             
             if(u!=null){
                 this.dispose();
-                new FormPrincipal(u).setVisible(true);
+                new FormPrincipal1(u).setVisible(true);
             }
             else{
                 Mensajes.error("Usuario o contraseña incorrectos.");
@@ -116,8 +116,7 @@ public class FormLogin extends javax.swing.JFrame {
 
         txtUsuario.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
 
-        btnIngresar.setBackground(new java.awt.Color(83, 74, 183));
-        btnIngresar.setForeground(new java.awt.Color(255, 255, 255));
+        btnIngresar.setBackground(new java.awt.Color(102, 255, 51));
         btnIngresar.setText("INGRESAR AL SISTEMA");
         btnIngresar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -250,7 +249,6 @@ public class FormLogin extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FormLogin().setVisible(true);
             }
         });
     }

@@ -11,8 +11,8 @@ public class ProductoAlimento extends ProductoBase{
     }
     
     //Constructor con parametros
-    public ProductoAlimento(boolean perecedero, int id, String codigo, String nombre, String categoria, double precio, int stock, int stock_min) {
-        super(id, codigo, nombre, categoria, precio, stock, stock_min);
+    public ProductoAlimento(boolean perecedero, int id, String codigo, String nombre, String categoria,String tipo, double precio, int stock, int stock_min) {
+        super(id, codigo, nombre, categoria,"ALIMENTO", precio, stock, stock_min);
         this.perecedero = perecedero;
     }
 
@@ -24,15 +24,11 @@ public class ProductoAlimento extends ProductoBase{
         this.perecedero = perecedero;
     }
 
+    @Override
+    public String getTipo() { return "ALIMENTO"; }
     
     //Metodos abstractos:
     
-    //Retorna el tipo producto (ALIMENTO)
-    @Override
-    public String Tipo() {
-        return "ALIMENTO";
-    }
-
     //Retorna si nesecita refrigeracion si es un aliemnto perecedero
     @Override
     public boolean nesecitaRefri() {

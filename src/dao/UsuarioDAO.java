@@ -90,25 +90,52 @@ public class UsuarioDAO {
     //Metodo para actualizar los datos de un usuario ya existente
     //retorna true si se actualizo correctamente
     public static boolean actualizarDatos(Usuario u){
-        String sql="UPDATE Usuarios "
-                + "SET usuario=?, contraseña=?, "
-                + "rol=?, nombres=?, apellidos=? "
-                + "WHERE id=?";
+        String sql;
         
-        try(Connection con=ConexionBD.obtenerConexion();
+        //Si la contraseña esta vacia no va a actualizar ese campo
+        if (u.getContraseña() == null || u.getContraseña().isEmpty()) {
+                sql = "UPDATE Usuarios "
+                + "SET usuario = ?, rol = ?, nombres = ?, apellidos = ? "
+                + "WHERE id = ?";
+        
+            try(Connection con=ConexionBD.obtenerConexion();
                 PreparedStatement ps=con.prepareStatement(sql)){
             
-            ps.setString(1,u.getUsuario());
-            ps.setString(2,u.getContraseña());
-            ps.setString(3,u.getRol());
-            ps.setString(4,u.getNombres());
-            ps.setString(5,u.getApellidos());
-            ps.setInt(6,u.getId());
+                ps.setString(1,u.getUsuario());
+                ps.setString(2,u.getRol());
+                ps.setString(3,u.getNombres());
+                ps.setString(4,u.getApellidos());
+                ps.setInt(5,u.getId());
             
-            return ps.executeUpdate()>0;
+                return ps.executeUpdate()>0;
         
-        }catch(Exception e){
-            throw new ErrorBD("Error al actualizar los datos: "+e.getMessage(),"actualizar");
+                }catch(Exception e){
+                        throw new ErrorBD("Error al actualizar los datos: "+e.getMessage(),"actualizar");
+                        }
+        }
+        else{
+                // Si hay contraseña nueva sí la actualiza (contraseña)
+                sql = "UPDATE Usuarios "
+                + "SET usuario = ?, contraseña = ?, "
+                + "rol = ?, nombres = ?, apellidos = ? "
+                + "WHERE id = ?";
+
+                try (Connection con = ConexionBD.obtenerConexion();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+
+                    ps.setString(1, u.getUsuario());
+                    ps.setString(2, u.getContraseña());
+                    ps.setString(3, u.getRol());
+                    ps.setString(4, u.getNombres());
+                    ps.setString(5, u.getApellidos());
+                    ps.setInt(6, u.getId());
+                    
+                    return ps.executeUpdate() > 0;
+
+                } catch (Exception e) {
+                        throw new ErrorBD("Error al actualizar: "
+                            + e.getMessage(), "actualizar");
+                }   
         }
     }
     
@@ -164,5 +191,20 @@ public class UsuarioDAO {
 
         }
         return false;
+    }
+    
+    public static boolean eliminarUsuario(int id){
+        String sql="DELETE Usuarios WHERE id = ? ";
+        try(Connection con=ConexionBD.obtenerConexion();
+            PreparedStatement ps=con.prepareStatement(sql)){
+            
+            ps.setInt(1, id);
+            
+            return ps.executeUpdate()>0;
+        
+        }catch(Exception e){
+            throw new ErrorBD("Error al eliminar usuario: "
+                              + e.getMessage(), "eliminarUsuario");
+        }
     }
 }

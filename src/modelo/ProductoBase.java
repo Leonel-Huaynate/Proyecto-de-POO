@@ -8,6 +8,7 @@ public abstract class ProductoBase {
     private String codigo;
     private String nombre;
     private String categoria;
+    private String tipo;
     private double precio;
     private int stock;
     private int stock_min;
@@ -17,11 +18,12 @@ public abstract class ProductoBase {
     public ProductoBase(){};
 
     //Constructor con parametros
-    public ProductoBase(int id, String codigo, String nombre, String categoria, double precio, int stock, int stock_min) {
+    public ProductoBase(int id, String codigo, String nombre, String categoria,String tipo, double precio, int stock, int stock_min) {
         this.id = id;
         this.codigo = codigo;
         this.nombre = nombre;
         this.categoria = categoria;
+        this.tipo=tipo;
         this.precio = precio;
         this.stock = stock;
         this.stock_min = stock_min;
@@ -52,6 +54,12 @@ public abstract class ProductoBase {
     }
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+    public String getTipo() {
+        return tipo;
+    }
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
     public double getPrecio() {
         return precio;
@@ -92,18 +100,18 @@ public abstract class ProductoBase {
     
     //Metodo para mostrar el precio formateado 
     public String getPrecioFormateado() {
-        return String.format("S/ %.2f", precio);
+        return String.format("S/ %.2f", precio)
+                 .replace(",", ".");
     }
     
     //Metodos abstractos
     
-    public abstract String Tipo();
     public abstract boolean nesecitaRefri();
     public abstract String getIcono();
     
     @Override
     public String toString() {
-        return "[" + Tipo() + "] " + codigo + " - " + nombre
+        return "[" + getTipo() + "] " + codigo + " - " + nombre
              + " | " + getPrecioFormateado()
              + " | Stock: " + stock;
     }

@@ -12,8 +12,8 @@ public class ProductoLimpieza extends ProductoBase{
     }
     
     //Constructor con parametros
-    public ProductoLimpieza(boolean esInflamable, int id, String codigo, String nombre, String categoria, double precio, int stock, int stock_min) {
-        super(id, codigo, nombre, categoria, precio, stock, stock_min);
+    public ProductoLimpieza(boolean esInflamable, int id, String codigo, String nombre, String categoria,String tipo, double precio, int stock, int stock_min) {
+        super(id, codigo, nombre, categoria,"LIMPIEZA", precio, stock, stock_min);
         this.esInflamable = esInflamable;
     }
     
@@ -25,13 +25,11 @@ public class ProductoLimpieza extends ProductoBase{
         this.esInflamable = esInflamable;
     }
 
+    @Override
+    public String getTipo() { return "LIMPIEZA"; }
+    
     //Metodos abstractos
     
-    @Override
-    public String Tipo() {
-        return "LIMPIEZA";
-    }
-
     @Override
     public boolean nesecitaRefri() {
         return false;
