@@ -52,22 +52,28 @@ public class FormPrincipal1 extends javax.swing.JFrame {
         
         mnuUsuarios.setVisible(false);
         mnuProductos.setVisible(false);
-        mnuVentas.setVisible(false);
         mnuReportes.setVisible(false);
+        mnuClientes.setVisible(false);
         mnuStock.setVisible(false);
+        mnuVentas.setVisible(false);
 
          if (usuarioActual.esSuperAdmin()) {
             mnuUsuarios.setVisible(true);
             mnuProductos.setVisible(true);
             mnuReportes.setVisible(true);
-
+            mnuClientes.setVisible(true);
+            mnuStock.setVisible(true);
+            mnuVentas.setVisible(true);
+                
         } else if (usuarioActual.esAdmin()) {
-            mnuProductos.setVisible(true);
+            mnuProductos.setVisible(true);  
             mnuReportes.setVisible(true);
+            mnuClientes.setVisible(true);
 
         } else if (usuarioActual.esCajero()) {
-            mnuVentas.setVisible(true);
+            mnuClientes.setVisible(true);
             mnuStock.setVisible(true);
+            mnuVentas.setVisible(true);
         }
     }
     
@@ -117,10 +123,12 @@ public class FormPrincipal1 extends javax.swing.JFrame {
         itemProductos = new javax.swing.JMenuItem();
         mnuReportes = new javax.swing.JMenu();
         itemReportes = new javax.swing.JMenuItem();
-        mnuVentas = new javax.swing.JMenu();
-        itemVenta = new javax.swing.JMenuItem();
+        mnuClientes = new javax.swing.JMenu();
+        itemClientes = new javax.swing.JMenuItem();
         mnuStock = new javax.swing.JMenu();
         itemStock = new javax.swing.JMenuItem();
+        mnuVentas = new javax.swing.JMenu();
+        itemVenta = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -149,7 +157,7 @@ public class FormPrincipal1 extends javax.swing.JFrame {
         dspEscritorioLayout.setVerticalGroup(
             dspEscritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dspEscritorioLayout.createSequentialGroup()
-                .addGap(0, 308, Short.MAX_VALUE)
+                .addGap(0, 309, Short.MAX_VALUE)
                 .addComponent(jPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -184,12 +192,12 @@ public class FormPrincipal1 extends javax.swing.JFrame {
 
         jMenuBar1.add(mnuReportes);
 
-        mnuVentas.setText("Ventas");
+        mnuClientes.setText("Clientes");
 
-        itemVenta.setText("Realizar Venta");
-        mnuVentas.add(itemVenta);
+        itemClientes.setText("Gestionar Clientes");
+        mnuClientes.add(itemClientes);
 
-        jMenuBar1.add(mnuVentas);
+        jMenuBar1.add(mnuClientes);
 
         mnuStock.setText("Stock");
 
@@ -197,6 +205,13 @@ public class FormPrincipal1 extends javax.swing.JFrame {
         mnuStock.add(itemStock);
 
         jMenuBar1.add(mnuStock);
+
+        mnuVentas.setText("Ventas");
+
+        itemVenta.setText("Realizar Venta");
+        mnuVentas.add(itemVenta);
+
+        jMenuBar1.add(mnuVentas);
 
         setJMenuBar(jMenuBar1);
 
@@ -259,6 +274,7 @@ public class FormPrincipal1 extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane dspEscritorio;
+    private javax.swing.JMenuItem itemClientes;
     private javax.swing.JMenuItem itemProductos;
     private javax.swing.JMenuItem itemReportes;
     private javax.swing.JMenuItem itemStock;
@@ -269,6 +285,7 @@ public class FormPrincipal1 extends javax.swing.JFrame {
     private javax.swing.JLabel lblBienvenida;
     private javax.swing.JLabel lblFecha;
     private javax.swing.JLabel lblRol;
+    private javax.swing.JMenu mnuClientes;
     private javax.swing.JMenu mnuProductos;
     private javax.swing.JMenu mnuReportes;
     private javax.swing.JMenu mnuStock;

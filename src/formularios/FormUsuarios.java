@@ -3,6 +3,8 @@ package formularios;
 
 import modelo.Usuario;
 import dao.UsuarioDAO;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import utilidades.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
@@ -21,8 +23,6 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
         aplicarEstilo();
     }
     private void aplicarEstilo() {
-    // Panel de datos — fondo azul oscuro
-    jPanel1.setBackground(new java.awt.Color(30, 30, 60));
 
     // Panel de tabla — fondo gris claro
     jPanel2.setBackground(new java.awt.Color(245, 245, 250));
@@ -48,17 +48,11 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
         new java.awt.Color(0, 123, 255));
     tblUsuarios.setSelectionForeground(java.awt.Color.WHITE);
 
-    // Labels en blanco sobre fondo oscuro
-    for (java.awt.Component c : jPanel1.getComponents()) {
-        if (c instanceof javax.swing.JLabel) {
-            c.setForeground(java.awt.Color.WHITE);
-        }
-    }
 }
     
     private void configurarTabla(){
         modelo = new DefaultTableModel(
-            new String[]{"ID", "Usuario", "Nombres",
+            new String[]{"ID", "Usuario", "DNI", "Nombres",
                          "Apellidos", "Rol", "Estado"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -89,6 +83,7 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
                 modelo.addRow(new Object[]{
                     u.getId(),
                     u.getUsuario(),
+                    u.getDni(),
                     u.getNombres(),
                     u.getApellidos(),
                     u.getRol(),
@@ -118,7 +113,29 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
             }
         }
         });
+        
+        cmbRol.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            actualizarObligatoriedad();
+        }
+    });
     }
+    
+    private void actualizarObligatoriedad() {
+    String rol = cmbRol.getSelectedItem().toString();
+    if (rol.equals("CAJERO")) {
+        // DNI obligatorio — fondo amarillo
+        txtDni.setBackground(new java.awt.Color(255, 255, 200));
+        lblDni.setText("DNI: *");
+        lblDni.setForeground(new java.awt.Color(180, 0, 0));
+    } else {
+        // DNI opcional — fondo blanco
+        txtDni.setBackground(java.awt.Color.WHITE);
+        lblDni.setText("DNI:");
+        lblDni.setForeground(java.awt.Color.BLACK);
+    }
+}
     
     //Metodo para cargar datos a los txts de la tabla
     private void cargarDatosTabla(){
@@ -128,11 +145,14 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
         idSeleccionado=(int)modelo.getValueAt(fila, 0);
         txtUsuario.setText((String) modelo.getValueAt(fila, 1));
         txtContraseña.setText("");
-        txtNombres.setText((String) modelo.getValueAt(fila, 2));
-        txtApellidos.setText((String) modelo.getValueAt(fila, 3));
-        cmbRol.setSelectedItem(modelo.getValueAt(fila, 4));
+        //El DNI puede ser null 
+        Object dni = modelo.getValueAt(fila, 2);
+        txtDni.setText(dni != null ? dni.toString() : "");
+        txtNombres.setText((String) modelo.getValueAt(fila, 3));
+        txtApellidos.setText((String) modelo.getValueAt(fila, 4));
+        cmbRol.setSelectedItem(modelo.getValueAt(fila, 5));
         chkActivo.setSelected(
-        modelo.getValueAt(fila, 5).equals("Activo"));
+        modelo.getValueAt(fila, 6).equals("Activo"));
     }
         
     //Metodo para limpiar los campós
@@ -142,6 +162,7 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
         txtApellidos.setText("");
         txtUsuario.setText("");
         txtContraseña.setText("");
+        txtDni.setText("");
         cmbRol.setSelectedIndex(0);
         txtBuscar.setText("");
         chkActivo.setSelected(true);
@@ -153,6 +174,7 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
         String apellidos=txtApellidos.getText().trim();
         String usuario=txtUsuario.getText().trim();
         String contraseña=new String(txtContraseña.getPassword()).trim();
+        String dni=txtDni.getText().trim();
         String rol=cmbRol.getSelectedItem().toString();
         boolean activo    = chkActivo.isSelected(); 
         
@@ -161,8 +183,21 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
            return;
         }
         
-        try{
+        if(rol.equals("CAJERO")){
+            if(dni.isEmpty()){Mensajes.advertencia("El DNI es obligatorio para el Cajero.");
+            return;
+            }
+            if(!Validaciones.dniValido(dni)){Mensajes.advertencia("El DNI ingresado es invalido.");
+            return;
+            }
+        }
+        if(!dni.isEmpty()&& !Validaciones.dniValido(dni)){
+            Mensajes.advertencia("El DNI ingresado es invalido.");
+            return;
+        }
             
+        
+        try{
             if(idSeleccionado==-1){
                 
                 //Significa un nuevo Usuario
@@ -174,14 +209,19 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
                     Mensajes.advertencia("Ese nombre de usuario ya existe.");
                     return;
                 }
+                if(!dni.isEmpty()&& UsuarioDAO.existeDni(dni)){
+                    Mensajes.advertencia("Ese DNI ya esta registrado.");
+                    return;
+                }
                 Usuario nuevo = new Usuario(usuario, contraseña,
-                                            rol, nombres, apellidos);
+                                            rol, nombres, apellidos,dni.isEmpty()? null:dni);
                 UsuarioDAO.insertarUsuario(nuevo);
                 Mensajes.exito("Usuario creado correctamente.");
             }
             else{
                 //Significa que se va a Editar un Usuario ya exsistente
-                Usuario usuarioEditar=new Usuario(usuario, contraseña, rol, nombres, apellidos);
+                Usuario usuarioEditar=new Usuario(usuario, contraseña, rol, nombres, apellidos,
+                        dni.isEmpty()? null:dni);
                 
                 usuarioEditar.setId(idSeleccionado);
                 UsuarioDAO.actualizarDatos(usuarioEditar);
@@ -212,21 +252,22 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
         modelo.setRowCount(0);
         try {
             for (Usuario u : UsuarioDAO.listarTodos()) {
-            // Busca por nombre, apellido o usuario
-                if (u.getNombres().toLowerCase().contains(buscar.toLowerCase())
-                || u.getApellidos().toLowerCase().contains(buscar.toLowerCase())
-                || u.getUsuario().toLowerCase().contains(buscar.toLowerCase())) {
-
-                    modelo.addRow(new Object[]{
-                    u.getId(),
-                    u.getUsuario(),
-                    u.getNombres(),
-                    u.getApellidos(),
-                    u.getRol(),
-                    u.isActivo() ? "Activo" : "Inactivo"
-                    });
+            // Busca por usuario o DNI
+                boolean bandera=u.getUsuario().toLowerCase().contains(buscar.toLowerCase())
+                || (u.getDni()!= null && u.getDni().contains(buscar));
+                
+                    if(bandera){
+                        modelo.addRow(new Object[]{
+                        u.getId(),
+                        u.getUsuario(),
+                        u.getDni() != null ? u.getDni() : "", 
+                        u.getNombres(),
+                        u.getApellidos(),
+                        u.getRol(),
+                        u.isActivo() ? "Activo" : "Inactivo"
+                        });
+                    }
                 }
-            }
 
         if (modelo.getRowCount() == 0) {
             Mensajes.advertencia("No se encontró ningún usuario.");
@@ -280,6 +321,9 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
         btnBuscar = new javax.swing.JButton();
         txtBuscar = new javax.swing.JTextField();
         btnEliminar = new javax.swing.JButton();
+        lblBuscar = new javax.swing.JLabel();
+        txtDni = new javax.swing.JTextField();
+        lblDni = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         scrollTabla = new javax.swing.JScrollPane();
         tblUsuarios = new javax.swing.JTable();
@@ -292,12 +336,16 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
         setTitle("Gestionar Usuarios");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos del Usuario"));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setText("Nombres :");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, -1, -1));
 
         jLabel2.setText("Apellidos :");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, -1, -1));
 
         jLabel3.setText("Usuario :");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 30, -1, -1));
 
         btnNuevo.setText("NUEVO");
         btnNuevo.addActionListener(new java.awt.event.ActionListener() {
@@ -305,6 +353,7 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
                 btnNuevoActionPerformed(evt);
             }
         });
+        jPanel1.add(btnNuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 186, -1, -1));
 
         btnGuardar.setText("GUARDAR");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -312,14 +361,23 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
                 btnGuardarActionPerformed(evt);
             }
         });
+        jPanel1.add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(465, 186, -1, -1));
 
         jLabel4.setText("Contraseña :");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 80, -1, -1));
 
         jLabel5.setText("Rol :");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(533, 57, -1, -1));
+        jPanel1.add(txtNombres, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 40, 142, -1));
+        jPanel1.add(txtApellidos, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 100, 134, -1));
+        jPanel1.add(txtUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 30, 129, -1));
 
         cmbRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ADMIN", "CAJERO" }));
+        jPanel1.add(cmbRol, new org.netbeans.lib.awtextra.AbsoluteConstraints(574, 54, -1, -1));
 
         chkActivo.setText("Activo");
+        jPanel1.add(chkActivo, new org.netbeans.lib.awtextra.AbsoluteConstraints(558, 115, -1, -1));
+        jPanel1.add(txtContraseña, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 80, 130, -1));
 
         btnBuscar.setText("BUSCAR");
         btnBuscar.addActionListener(new java.awt.event.ActionListener() {
@@ -327,8 +385,10 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
                 btnBuscarActionPerformed(evt);
             }
         });
+        jPanel1.add(btnBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 180, -1, -1));
 
-        txtBuscar.setBorder(javax.swing.BorderFactory.createTitledBorder("Buscar Usuario :"));
+        txtBuscar.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        jPanel1.add(txtBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 190, 190, 23));
 
         btnEliminar.setText("ELIMINAR");
         btnEliminar.addActionListener(new java.awt.event.ActionListener() {
@@ -336,94 +396,14 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
                 btnEliminarActionPerformed(evt);
             }
         });
+        jPanel1.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(575, 186, -1, -1));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(34, 34, 34)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(6, 6, 6)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(txtNombres, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(45, 45, 45)
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 276, Short.MAX_VALUE)
-                                    .addComponent(btnNuevo)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(btnGuardar)
-                                    .addGap(23, 23, 23)
-                                    .addComponent(btnEliminar))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                    .addComponent(txtApellidos, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(42, 42, 42)
-                                    .addComponent(jLabel4)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(59, 59, 59)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addComponent(jLabel5)
-                                            .addGap(18, 18, 18)
-                                            .addComponent(cmbRol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addGap(25, 25, 25)
-                                            .addComponent(chkActivo))))))
-                        .addGap(49, 49, 49))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnBuscar)
-                        .addGap(0, 0, Short.MAX_VALUE))))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel3)
-                            .addComponent(txtNombres, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cmbRol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))))
-                .addGap(38, 38, 38)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel2)
-                    .addComponent(txtApellidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chkActivo))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnBuscar))
-                        .addGap(21, 21, 21))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnNuevo)
-                            .addComponent(btnGuardar)
-                            .addComponent(btnEliminar))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-        );
+        lblBuscar.setText("Buscar por Usuario o DNI:");
+        jPanel1.add(lblBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 160, -1, -1));
+        jPanel1.add(txtDni, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 130, 130, -1));
+
+        lblDni.setText("DNI:");
+        jPanel1.add(lblDni, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 130, -1, -1));
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Lista de Usuarios"));
 
@@ -445,30 +425,27 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(20, Short.MAX_VALUE)
-                .addComponent(scrollTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 664, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16))
+                .addContainerGap(14, Short.MAX_VALUE)
+                .addComponent(scrollTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 732, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 739, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -506,11 +483,14 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel lblBuscar;
+    private javax.swing.JLabel lblDni;
     private javax.swing.JScrollPane scrollTabla;
     private javax.swing.JTable tblUsuarios;
     private javax.swing.JTextField txtApellidos;
     private javax.swing.JTextField txtBuscar;
     private javax.swing.JPasswordField txtContraseña;
+    private javax.swing.JTextField txtDni;
     private javax.swing.JTextField txtNombres;
     private javax.swing.JTextField txtUsuario;
     // End of variables declaration//GEN-END:variables

@@ -16,9 +16,9 @@ public class Usuario extends Persona{
         super();
     }
 
-    //Constructor con parametros que lee desde la BD
-    public Usuario(int id, String usuario,String rol, String nombres, String apellidos) {
-        super(nombres, apellidos);
+    //Constructor con parametros que lee desde la BD (sin contraseña)
+    public Usuario(int id, String usuario,String rol, String nombres, String apellidos,String dni) {
+        super(nombres, apellidos,dni);
         this.id = id;
         this.usuario = usuario;
         this.rol = rol;
@@ -26,8 +26,8 @@ public class Usuario extends Persona{
     }
     
     //Este constructor es para cunado creamos un nuevo Usuario
-    public Usuario(String usuario, String contraseña, String rol, String nombres, String apellidos) {
-        super(nombres, apellidos);
+    public Usuario(String usuario, String contraseña, String rol, String nombres, String apellidos,String dni) {
+        super(nombres, apellidos,dni);
         this.usuario = usuario;
         this.contraseña = contraseña;
         this.rol = rol;

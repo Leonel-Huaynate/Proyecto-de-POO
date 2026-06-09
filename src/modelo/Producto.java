@@ -26,8 +26,5 @@ public class Producto extends ProductoBase{
     @Override
     public String getIcono() {
         return "📦";
-    }
-    
-    
-    
+    } 
 }

@@ -14,7 +14,7 @@ public class UsuarioDAO {
     //Retorna el Usuario autenticado o null si es incorrecto
     public static Usuario login(String usuario,String contraseña){
         
-        String sql="SELECT id,rol,usuario,contraseña,nombres,apellidos FROM Usuarios "
+        String sql="SELECT id, rol, usuario,contraseña,nombres,apellidos, dni FROM Usuarios "
                 + "WHERE usuario=? AND contraseña=? AND activo=1";
         
         try(Connection con=ConexionBD.obtenerConexion();
@@ -30,7 +30,8 @@ public class UsuarioDAO {
                         rs.getString("usuario"),
                         rs.getString("rol"),
                         rs.getString("nombres"),
-                        rs.getString("apellidos")
+                        rs.getString("apellidos"),
+                        rs.getString("dni")
                         );
             }
         }catch(Exception  e){
@@ -42,7 +43,7 @@ public class UsuarioDAO {
     //Metodo para retornar todos los usuarios para llenar la tabla en el FormUsuarios
     public static List<Usuario> listarTodos() {
     List<Usuario> lista = new ArrayList<>();
-    String sql = "SELECT id, usuario, rol, nombres, apellidos, activo "
+    String sql = "SELECT id, usuario, rol, nombres, apellidos, dni, activo "
                + "FROM Usuarios ORDER BY apellidos, nombres";
     try (Connection conn = ConexionBD.obtenerConexion();
          PreparedStatement ps = conn.prepareStatement(sql);
@@ -54,7 +55,8 @@ public class UsuarioDAO {
                 rs.getString("usuario"),
                 rs.getString("rol"),
                 rs.getString("nombres"),
-                rs.getString("apellidos")
+                rs.getString("apellidos"),
+                rs.getString("dni")
                 );
             u.setActivo(rs.getBoolean("activo"));
             lista.add(u);
@@ -68,8 +70,8 @@ public class UsuarioDAO {
     //Metodo para insertar un nuevo usuario a la BD
     //retorna true si se inserto correctamente
     public static boolean insertarUsuario(Usuario u){
-        String sql="INSERT INTO Usuarios (usuario,contraseña,rol,nombres,apellidos) "
-                + "VALUES (?,?,?,?,?)";
+        String sql="INSERT INTO Usuarios (usuario, contraseña, rol, nombres, apellidos, dni) "
+                + "VALUES (?,?,?,?,?,?)";
         
         try(Connection con=ConexionBD.obtenerConexion();
             PreparedStatement ps=con.prepareStatement(sql)){
@@ -79,6 +81,7 @@ public class UsuarioDAO {
             ps.setString(3,u.getRol());
             ps.setString(4,u.getNombres());
             ps.setString(5,u.getApellidos());
+            ps.setString(6,u.getDni());
             
             return ps.executeUpdate()>0;    
         
@@ -95,7 +98,7 @@ public class UsuarioDAO {
         //Si la contraseña esta vacia no va a actualizar ese campo
         if (u.getContraseña() == null || u.getContraseña().isEmpty()) {
                 sql = "UPDATE Usuarios "
-                + "SET usuario = ?, rol = ?, nombres = ?, apellidos = ? "
+                + "SET usuario = ?, rol = ?, nombres = ?, apellidos = ?, dni = ? "
                 + "WHERE id = ?";
         
             try(Connection con=ConexionBD.obtenerConexion();
@@ -105,7 +108,8 @@ public class UsuarioDAO {
                 ps.setString(2,u.getRol());
                 ps.setString(3,u.getNombres());
                 ps.setString(4,u.getApellidos());
-                ps.setInt(5,u.getId());
+                ps.setString(5,u.getDni());
+                ps.setInt(6,u.getId());
             
                 return ps.executeUpdate()>0;
         
@@ -117,7 +121,7 @@ public class UsuarioDAO {
                 // Si hay contraseña nueva sí la actualiza (contraseña)
                 sql = "UPDATE Usuarios "
                 + "SET usuario = ?, contraseña = ?, "
-                + "rol = ?, nombres = ?, apellidos = ? "
+                + "rol = ?, nombres = ?, apellidos = ?, dni = ? "
                 + "WHERE id = ?";
 
                 try (Connection con = ConexionBD.obtenerConexion();
@@ -128,7 +132,8 @@ public class UsuarioDAO {
                     ps.setString(3, u.getRol());
                     ps.setString(4, u.getNombres());
                     ps.setString(5, u.getApellidos());
-                    ps.setInt(6, u.getId());
+                    ps.setString(6,u.getDni());
+                    ps.setInt(7, u.getId());
                     
                     return ps.executeUpdate() > 0;
 
@@ -193,6 +198,26 @@ public class UsuarioDAO {
         return false;
     }
     
+    //Metodo para verificar si ya existe un DNI registrado
+    public static boolean existeDni(String dni){
+        String sql="SELECT COUNT(*) FROM Usuarios WHERE dni = ? ";
+        
+        try(Connection con=ConexionBD.obtenerConexion();
+            PreparedStatement ps=con.prepareStatement(sql)){
+            
+            ps.setString(1,dni);
+            ResultSet rs=ps.executeQuery();
+            
+            if(rs.next()) return rs.getInt(1)>0;
+        
+        }catch(Exception e){
+            throw new ErrorBD("Error al verificar DNI: "
+                            +e.getMessage(), "existeDni");
+        }
+        return false;
+    }
+    
+    //Metodo para eliminar Usuario
     public static boolean eliminarUsuario(int id){
         String sql="DELETE Usuarios WHERE id = ? ";
         try(Connection con=ConexionBD.obtenerConexion();
