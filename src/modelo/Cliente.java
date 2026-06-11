@@ -12,7 +12,7 @@ public class Cliente extends Persona{
     }
     
     //Constructor con parametros que lee desde la BD
-    public Cliente(int id, String dni, String nombres, String apellidos) {
+    public Cliente(int id, String nombres, String apellidos, String dni) {
         super(nombres, apellidos,dni);
         this.id = id;
     }
