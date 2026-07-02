@@ -203,6 +203,18 @@ public class FormClientes extends javax.swing.JInternalFrame {
             }
         }
     }
+    
+    //Metodo para pre-llenar el DNI desde FormVentas
+    public void setDniInicial(String dni){
+        txtDni.setText(dni);
+    }
+    //Metodo para pre-llenar todos los datos desde otra Clase
+    public void setDatosIniciales(String dni,String nombres,String apellidos){
+        txtDni.setText(dni);
+        txtNombres.setText(nombres);
+        txtApellidos.setText(apellidos);
+    }
+    
     // Estilo visual 
     private void aplicarEstilo() {
         jPanel2.setBackground(new java.awt.Color(245, 245, 250));
@@ -253,7 +265,6 @@ public class FormClientes extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setIconifiable(true);
-        setMaximizable(true);
         setTitle("Gestion de Clientes");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos del Cliente:"));

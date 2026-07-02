@@ -407,7 +407,6 @@ public class FormProductos extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setIconifiable(true);
-        setMaximizable(true);
         setTitle("Gestion de Productos");
 
         jLabel1.setText("Codigo :");

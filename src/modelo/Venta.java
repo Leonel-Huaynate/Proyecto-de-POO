@@ -2,24 +2,25 @@
 package modelo;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 public class Venta {
     
     private int id;
-    private Date fecha;
+    private Timestamp fecha;
     private int idUsuario;
     private String nombreCajero;
     private Cliente cliente;
     private double total;
     private String tipoPago;
     private List<DetalleVenta> detalles;
+    private String nombreCliente;
     
     //Constructor Vacio para crear la lista vacia y la fecha 
     public Venta() {
         this.detalles = new ArrayList<>();
-        this.fecha    = new Date();
+        this.fecha    = new Timestamp(System.currentTimeMillis());
         this.tipoPago = "EFECTIVO";
         this.total    = 0;
     }
@@ -36,8 +37,8 @@ public class Venta {
     public int     getId()                  { return id; }
     public void    setId(int id)            { this.id = id;}
 
-    public Date    getFecha()               { return fecha; }
-    public void    setFecha(Date fecha)     { this.fecha = fecha;}
+    public Timestamp    getFecha()               { return fecha; }
+    public void    setFecha(Timestamp fecha)     { this.fecha = fecha;}
 
     public int     getIdUsuario()           { return idUsuario; }
     public void    setIdUsuario(int idUsuario)    { this.idUsuario = idUsuario;}
@@ -48,17 +49,24 @@ public class Venta {
     public Cliente getCliente()             { return cliente; }
     public void    setCliente(Cliente c)    { this.cliente = c;}
 
-    //El total no tiene Setter ya que se calcular automaticamente no queremos modificarlo exterenamemte
     public double  getTotal()               { return total; }
+    // El total se calcula automáticamente con calcularTotal()
+    // Este setter solo se usa en el DAO al leer desde la BD
+    public void setTotal(double total) {
+    this.total = total;
+}
 
     public String  getTipoPago()            { return tipoPago; }
     public void    setTipoPago(String tipoPago)    { this.tipoPago = tipoPago;}
 
     public List<DetalleVenta> getDetalles() { return detalles;}
     
+    public String getNombreCliente()    {return nombreCliente;}
+    public void setNombreCliente(String nombreCliente)  {this.nombreCliente=nombreCliente;}
+    
     //Metodos del carrito
     
-    //Metodo para agregar un producto al carritoy recalcula el total 
+    //Metodo para agregar un producto al carrito y recalcula el total 
     public void agregarDetalle(DetalleVenta d){
         detalles.add(d);
         calcularTotal();

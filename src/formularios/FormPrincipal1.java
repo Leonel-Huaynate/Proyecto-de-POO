@@ -132,15 +132,17 @@ public class FormPrincipal1 extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        dspEscritorio.setForeground(new java.awt.Color(255, 255, 255));
+
         jPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblBienvenida.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         lblBienvenida.setText("Bienvenido :");
-        jPanel.add(lblBienvenida, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 30, -1, -1));
+        jPanel.add(lblBienvenida, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 30, -1, -1));
 
         lblFecha.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         lblFecha.setText("Fecha :");
-        jPanel.add(lblFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 70, -1, -1));
+        jPanel.add(lblFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 70, -1, -1));
 
         lblRol.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         lblRol.setText("Rol :");
@@ -157,9 +159,11 @@ public class FormPrincipal1 extends javax.swing.JFrame {
         dspEscritorioLayout.setVerticalGroup(
             dspEscritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dspEscritorioLayout.createSequentialGroup()
-                .addGap(0, 309, Short.MAX_VALUE)
+                .addGap(0, 305, Short.MAX_VALUE)
                 .addComponent(jPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
+
+        jMenuBar1.setBackground(new java.awt.Color(255, 102, 102));
 
         mnuUsuarios.setText("Usuarios");
 
@@ -188,6 +192,11 @@ public class FormPrincipal1 extends javax.swing.JFrame {
         mnuReportes.setText("Reportes");
 
         itemReportes.setText("Ver Reportes");
+        itemReportes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemReportesActionPerformed(evt);
+            }
+        });
         mnuReportes.add(itemReportes);
 
         jMenuBar1.add(mnuReportes);
@@ -207,6 +216,11 @@ public class FormPrincipal1 extends javax.swing.JFrame {
         mnuStock.setText("Stock");
 
         itemStock.setText("Consultar Stock");
+        itemStock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemStockActionPerformed(evt);
+            }
+        });
         mnuStock.add(itemStock);
 
         jMenuBar1.add(mnuStock);
@@ -214,6 +228,11 @@ public class FormPrincipal1 extends javax.swing.JFrame {
         mnuVentas.setText("Ventas");
 
         itemVenta.setText("Realizar Venta");
+        itemVenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemVentaActionPerformed(evt);
+            }
+        });
         mnuVentas.add(itemVenta);
 
         jMenuBar1.add(mnuVentas);
@@ -245,6 +264,18 @@ public class FormPrincipal1 extends javax.swing.JFrame {
     private void itemClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemClientesActionPerformed
         abrirVentanaInterna(new FormClientes());
     }//GEN-LAST:event_itemClientesActionPerformed
+
+    private void itemVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemVentaActionPerformed
+        abrirVentanaInterna(new FormVentas(usuarioActual));
+    }//GEN-LAST:event_itemVentaActionPerformed
+
+    private void itemReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemReportesActionPerformed
+        abrirVentanaInterna(new FormReportes());
+    }//GEN-LAST:event_itemReportesActionPerformed
+
+    private void itemStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemStockActionPerformed
+        abrirVentanaInterna(new FormStock());
+    }//GEN-LAST:event_itemStockActionPerformed
 
     /**
      * @param args the command line arguments

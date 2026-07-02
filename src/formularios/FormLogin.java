@@ -104,7 +104,7 @@ public class FormLogin extends javax.swing.JFrame {
         jLabel1.setText("Minimarket La Favorita");
 
         jLabel2.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jLabel2.setText("Sistemas de Ventas e Inventario");
+        jLabel2.setText("Sistemas de Gestion de Ventas ");
 
         jLabel3.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jLabel3.setText("Usuario :");
@@ -116,7 +116,7 @@ public class FormLogin extends javax.swing.JFrame {
 
         txtUsuario.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
 
-        btnIngresar.setBackground(new java.awt.Color(102, 255, 51));
+        btnIngresar.setBackground(new java.awt.Color(255, 204, 102));
         btnIngresar.setText("INGRESAR AL SISTEMA");
         btnIngresar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -125,7 +125,6 @@ public class FormLogin extends javax.swing.JFrame {
         });
 
         btnLimpiar.setBackground(new java.awt.Color(240, 240, 245));
-        btnLimpiar.setForeground(new java.awt.Color(100, 100, 110));
         btnLimpiar.setText("LIMPIAR");
         btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -143,9 +142,6 @@ public class FormLogin extends javax.swing.JFrame {
                         .addGap(139, 139, 139)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelPrincipalLayout.createSequentialGroup()
-                        .addGap(149, 149, 149)
-                        .addComponent(jLabel2))
-                    .addGroup(panelPrincipalLayout.createSequentialGroup()
                         .addGap(169, 169, 169)
                         .addComponent(btnIngresar))
                     .addGroup(panelPrincipalLayout.createSequentialGroup()
@@ -162,17 +158,20 @@ public class FormLogin extends javax.swing.JFrame {
                         .addGap(28, 28, 28)
                         .addGroup(panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
-                            .addComponent(txtContraseña))))
-                .addContainerGap(127, Short.MAX_VALUE))
+                            .addComponent(txtContraseña)))
+                    .addGroup(panelPrincipalLayout.createSequentialGroup()
+                        .addGap(153, 153, 153)
+                        .addComponent(jLabel2)))
+                .addContainerGap(129, Short.MAX_VALUE))
         );
         panelPrincipalLayout.setVerticalGroup(
             panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelPrincipalLayout.createSequentialGroup()
                 .addGap(49, 49, 49)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
-                .addGap(36, 36, 36)
+                .addGap(34, 34, 34)
                 .addGroup(panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelPrincipalLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
@@ -198,7 +197,7 @@ public class FormLogin extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addComponent(panelPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -219,11 +218,7 @@ public class FormLogin extends javax.swing.JFrame {
         limpiarCampos();
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
@@ -246,7 +241,6 @@ public class FormLogin extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
             }

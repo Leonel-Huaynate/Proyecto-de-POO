@@ -331,7 +331,6 @@ public class FormUsuarios extends javax.swing.JInternalFrame {
         setBorder(null);
         setClosable(true);
         setIconifiable(true);
-        setMaximizable(true);
         setResizable(true);
         setTitle("Gestionar Usuarios");
 
